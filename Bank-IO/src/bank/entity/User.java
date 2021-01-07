@@ -1,4 +1,7 @@
-package bank.entity;
+package podzielony_bank_2;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -10,6 +13,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -36,6 +40,31 @@ public class User {
 	@JoinColumn(name="userdata_id")
 	private UserData userData;
 	
+	@OneToMany(cascade=CascadeType.ALL,fetch=FetchType.LAZY)
+	@JoinColumn(name="user_id")
+	private List<BankAccount> bankAccounts;
+	
+
+	public List<BankAccount> getBankAccounts() {
+		return bankAccounts;
+	}
+
+
+
+	public void setBankAccounts(List<BankAccount> bankAccounts) {
+		this.bankAccounts = bankAccounts;
+	}
+
+
+
+	public void addBankAccounts(BankAccount bankAccounts) {
+		if(this.bankAccounts.isEmpty()) {
+			this.bankAccounts = new ArrayList<BankAccount>();
+		}
+		
+		this.bankAccounts.add(bankAccounts);
+	}
+
 
 	public UserData getUserData() {
 		return userData;
