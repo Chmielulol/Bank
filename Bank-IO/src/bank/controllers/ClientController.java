@@ -12,12 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import bank.entity.BankAccount;
-import bank.entity.Card;
-import bank.entity.Transfer;
 import bank.entity.User;
 import bank.service.AccountService;
-import bank.service.CardService;
-import bank.service.TransferService;
 import bank.service.UserService;
 
 @Controller
