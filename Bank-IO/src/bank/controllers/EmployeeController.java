@@ -347,7 +347,7 @@ public class EmployeeController {
 			
 		}
 			
-		return "redirect:/employee/showclientAccount?accountId="+account.getAccountNumber();
+		return "redirect:/employee/showClientAccount?accountId="+account.getAccountNumber();
 	}
 	
 	@RequestMapping("/signOut")
