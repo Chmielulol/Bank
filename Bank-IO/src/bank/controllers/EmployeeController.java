@@ -198,7 +198,8 @@ public class EmployeeController {
 		
 		account.setUser(theClient);
 		
-		accountService.saveAccount(account);
+		if(!account.getName().isBlank())
+			accountService.saveAccount(account);
 		
 		return "redirect:/employee/showClientDetails?clientId="+theClient.getId();
 	}
