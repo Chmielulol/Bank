@@ -12,9 +12,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import bank.entity.BankAccount;
+import bank.entity.Card;
 import bank.entity.Transfer;
 import bank.entity.User;
 import bank.service.AccountService;
+import bank.service.CardService;
 import bank.service.TransferService;
 import bank.service.UserService;
 
@@ -33,7 +35,10 @@ public class ClientController {
 	@Autowired
 	private TransferService transferService;
 	
+	@Autowired
+	private CardService cardService;
 	
+
 	
 	@GetMapping("/processUser")
 	public String processUser(@ModelAttribute ("tempUser") User tempUser) {
@@ -134,7 +139,6 @@ public class ClientController {
 			return "redirect:/client/makeTransfer";
 	}
 	
-
 	@RequestMapping("/showUserData")
 	public String showUserData(Model model) {
 		
@@ -181,6 +185,99 @@ public class ClientController {
 		return "redirect:/client/changePassword";
 	}
 	
+	@RequestMapping("/showAccountDetails")
+	public String showAccountDetails(@RequestParam ("accountId") int accountId, Model model) {
+		
+		if(theUser==null ) {
+			return "redirect:/client/signOut";
+		}
+		
+		
+		
+		BankAccount account = accountService.getAccount(accountId);
+	
+		
+		List<Card> cards = cardService.getCards(account);
+		
+		model.addAttribute("account", account);
+		model.addAttribute("cards",cards);
+		
+		return "show-account-detail";
+	}
+	
+	@RequestMapping("/setAccountLimit")
+	public String setAccountLimit(@RequestParam ("accountNumber") int accountNumber,Model model) {
+		
+		if(theUser==null) {
+			return "redirect:/client/signOut";
+		}
+		
+		model.addAttribute("account", accountService.getAccount(accountNumber));
+		
+		return "set-account-limit";
+	}
+	
+	@PostMapping("/setAccountLimitPost")
+	public String setAccountLimitPost(@ModelAttribute ("account") BankAccount account) {
+		
+		if(theUser==null) {
+			return "redirect:/client/signOut";
+		}
+		
+		int i;
+
+		for(i=0;i<theUser.getBankAccounts().size()-1;i++) {
+			if(account.getAccountNumber() == theUser.getBankAccounts().get(i).getAccountNumber()) {
+				break;
+			}
+		}
+		
+		if(account.getLimit()>=0) {
+			theUser.getBankAccounts().get(i).setLimit(account.getLimit());
+			userService.saveUser(theUser);	
+			
+		}
+			
+		return "redirect:/client/showAccountDetails?accountId="+account.getAccountNumber();
+	}
+	
+	@RequestMapping("/setCardLimit")
+	public String setCardLimit(@RequestParam ("cardId") int cardId,Model model) {
+		
+		if(theUser==null ) {
+			return "redirect:/client/signOut";
+		}
+		
+		Card card = cardService.getCard(cardId);
+		
+		model.addAttribute("card",card);
+		model.addAttribute("account", card.getAccount());
+		
+		return "set-card-limit";
+	}
+	
+	@PostMapping("/setCardLimitPost")
+	public String setCardLimitPost( @ModelAttribute ("card") Card card) {
+		
+		if(theUser==null) {
+			return "redirect:/client/signOut";
+		}
+		
+		Card tempCard = cardService.getCard(card.getId());
+		
+		System.out.println(card.getId());
+		
+		BankAccount account = tempCard.getAccount();
+		
+				
+		if(card.getCardLimit()>=0) {
+			tempCard.setCardLimit(card.getCardLimit());	
+			cardService.saveCard(tempCard);
+			
+		}
+			
+		return "redirect:/client/showAccountDetails?accountId="+account.getAccountNumber();
+	}
 	
 	@RequestMapping("/signOut")
 	public String signOut() {

@@ -48,6 +48,9 @@ public class BankAccount{
 	@Column(name="transaction_limit")
 	private double limit;
 	
+	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
+	private List<Card> cards;
+	
 	public BankAccount() {}
 	
 	public BankAccount(double percentage, String name, User user, AccountType type, CurrencyType currency, double limit) {
@@ -58,6 +61,15 @@ public class BankAccount{
 		this.type = type;
 		this.currency = currency;
 		this.limit = limit;
+	}
+
+	public void addCard(Card card){
+		
+		if(this.cards.isEmpty()) {
+			this.cards=new ArrayList<Card>();
+		}
+		
+		this.cards.add(card);
 	}
 	
 
@@ -85,6 +97,14 @@ public class BankAccount{
 		return name;
 	}
 
+
+	public List<Card> getCards() {
+		return cards;
+	}
+
+	public void setCards(List<Card> cards) {
+		this.cards = cards;
+	}
 
 	public CurrencyType getCurrency() {
 		return currency;
