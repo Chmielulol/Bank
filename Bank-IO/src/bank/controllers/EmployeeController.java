@@ -1,4 +1,4 @@
-package podzielony_bank_8;
+package bank.controllers;
 
 import java.util.ArrayList;
 import java.util.List;
