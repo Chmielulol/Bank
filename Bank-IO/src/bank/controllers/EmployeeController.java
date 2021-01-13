@@ -105,6 +105,74 @@ public class EmployeeController {
 		return "employee-home";
 	}
 	
+	@RequestMapping("/addClient")
+	public String addClient(Model model) {
+		
+		if(theEmployee==null) {
+			return "redirect:/employee/signOut";
+		}
+		
+		UserData data = new UserData();
+		
+		model.addAttribute("user", theEmployee);
+		model.addAttribute("data", data);
+		
+		return "add-client";
+	}
+	
+	@PostMapping("/addClientPost")
+	public String addClientPost(@ModelAttribute ("data") UserData data) {
+		
+		if(theEmployee==null) {
+			return "redirect:/employee/signOut";
+		}
+		
+		if(data.getFirstName().length()<3 || data.getLastName().length()<3 || data.getPesel().length()<11 ) {
+			return "redirect:/employee/addClient";
+		}
+		
+		employeeService.addClient(data);
+		
+		reloadClients();
+		
+		return "redirect:/employee/home";
+	}
+	
+	@PostMapping("/searchClient")
+	public String searchClient(@ModelAttribute ("client") User client, Model model) {
+		
+		if(theEmployee==null) {
+			return "redirect:/employee/signOut";
+		}
+		
+		List<User> searchedClients = employeeService.searchClient(client);
+		
+		model.addAttribute("employee", theEmployee);
+		model.addAttribute("searchedClients", searchedClients);
+		model.addAttribute("client", theClient);
+		
+		return "search-users";
+	}
+	
+	@GetMapping("/showClientDetails")
+	public String showClientDetails(@RequestParam ("clientId") int clientId, Model model) {
+		
+		if(theEmployee==null ) {
+			return "redirect:/employee/signOut";
+		}
+		
+		theClient = employeeService.getClient(clientId);
+		theClient = accountService.getAccounts(theClient);	
+		UserData clientData = userService.getUserData(theClient);
+
+		
+		model.addAttribute("employee", theEmployee);
+		model.addAttribute("client", theClient);
+		model.addAttribute("clientData", clientData);
+		model.addAttribute("clientAccounts", theClient.getBankAccounts());
+				
+		return "show-full-user";
+	}
 	
 	
 	@RequestMapping("/signOut")
